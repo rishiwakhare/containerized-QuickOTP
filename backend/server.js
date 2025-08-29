@@ -9,22 +9,59 @@ app.use(cors());
 
 let otpStore = {}; // { email: { otp, expires } }
 
-// Prometheus metrics setup
-const collectDefaultMetrics = client.collectDefaultMetrics;
-collectDefaultMetrics(); // 
+client.collectDefaultMetrics();
 
-// Custom histogram for request duration
-const httpRequestDurationMicroseconds = new client.Histogram({
-  name: "http_request_duration_ms",
-  help: "Duration of HTTP requests in ms",
-  labelNames: ["method", "route", "status_code"],
-  buckets: [50, 100, 300, 500, 1000, 2000, 5000], // ms buckets
+// Active OTPs
+const otpActiveCount = new client.Gauge({
+  name: "otp_active_count",
+  help: "Number of active OTPs currently stored",
 });
 
-// Middleware to measure request durations
+// OTP send attempts
+const otpSendAttempts = new client.Counter({
+  name: "otp_send_total",
+  help: "Number of OTP send attempts",
+  labelNames: ["status"], // success | failed
+});
+
+// OTP validation attempts
+const otpValidationAttempts = new client.Counter({
+  name: "otp_validation_total",
+  help: "Number of OTP validation attempts",
+  labelNames: ["result"], // valid | invalid | expired
+});
+
+// Email send duration
+const emailSendDuration = new client.Histogram({
+  name: "email_send_duration_seconds",
+  help: "Duration of sending OTP emails",
+  buckets: [0.1, 0.3, 0.5, 1, 2, 5],
+});
+
+// HTTP request counter
+const httpRequestsTotal = new client.Counter({
+  name: "http_requests_total",
+  help: "Total number of HTTP requests",
+  labelNames: ["method", "route", "status_code"],
+});
+
+// HTTP request duration (seconds)
+const httpRequestDurationSeconds = new client.Histogram({
+  name: "http_request_duration_seconds",
+  help: "Duration of HTTP requests in seconds",
+  labelNames: ["method", "route", "status_code"],
+  buckets: [0.1, 0.3, 0.5, 1, 3, 5],
+});
+
+// Middleware to capture HTTP metrics
 app.use((req, res, next) => {
-  const end = httpRequestDurationMicroseconds.startTimer();
+  const end = httpRequestDurationSeconds.startTimer();
   res.on("finish", () => {
+    httpRequestsTotal.inc({
+      method: req.method,
+      route: req.path,
+      status_code: res.statusCode,
+    });
     end({ method: req.method, route: req.path, status_code: res.statusCode });
   });
   next();
@@ -35,6 +72,8 @@ app.get("/metrics", async (req, res) => {
   res.set("Content-Type", client.register.contentType);
   res.end(await client.register.metrics());
 });
+
+
 
 // send OTP
 app.post("/send-otp", async (req, res) => {
@@ -49,8 +88,8 @@ app.post("/send-otp", async (req, res) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "", // mail
-      pass: "", // pass through google app (not the normal password)
+      user: "rishiwakhare2002@gmail.com", // mail
+      pass: "howp xzmf qrrd krci", // pass through google app (not the normal password)
     },
   });
 
@@ -75,6 +114,6 @@ QuickOTP Team`,
   }
 });
 
-app.listen(3000, () =>
+app.listen(3000, "0.0.0.0", () =>
   console.log("✅ Backend running on http://localhost:3000")
 );
