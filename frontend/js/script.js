@@ -2,6 +2,7 @@ let otpKeeper;
 let countNum;
 let otpgen = document.querySelector(".otp-gen");
 let otpvalid = document.querySelector(".otp-valid");
+const BACKEND_URL = `http://${window.location.hostname}:3000`
 
 function otpGen() {
   function GEN_OTP(length = 6) {
@@ -44,17 +45,6 @@ function resetOTPInput() {
 }
 
 checkOTP();
-// otpgen.querySelector(".otp-btn").addEventListener("click", () => {
-//   retryOtpGen()
-//     .then((result) => {
-//       console.log(`Otp is ${result}`);
-//       otpvalid.querySelector(".otp-btn-valid").disabled = false;
-//       otpvalid.querySelector(".otp-paste").disabled = false;
-//     })
-//     .catch((err) => {
-//       console.error(`There was an issue: ${err}`);
-//     });
-// });
 
 otpgen.querySelector(".otp-btn").addEventListener("click", async () => {
   // Ask user for email
@@ -68,7 +58,7 @@ otpgen.querySelector(".otp-btn").addEventListener("click", async () => {
 
       // call backend
       try {
-        const response = await fetch("http://localhost:3000/send-otp", {
+        const response = await fetch(`${BACKEND_URL}/send-otp`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, otp: result })
