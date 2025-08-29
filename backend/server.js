@@ -1,12 +1,40 @@
 import express from "express";
 import nodemailer from "nodemailer";
 import cors from "cors";
+import client from "prom-client";
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
 let otpStore = {}; // { email: { otp, expires } }
+
+// Prometheus metrics setup
+const collectDefaultMetrics = client.collectDefaultMetrics;
+collectDefaultMetrics(); // 
+
+// Custom histogram for request duration
+const httpRequestDurationMicroseconds = new client.Histogram({
+  name: "http_request_duration_ms",
+  help: "Duration of HTTP requests in ms",
+  labelNames: ["method", "route", "status_code"],
+  buckets: [50, 100, 300, 500, 1000, 2000, 5000], // ms buckets
+});
+
+// Middleware to measure request durations
+app.use((req, res, next) => {
+  const end = httpRequestDurationMicroseconds.startTimer();
+  res.on("finish", () => {
+    end({ method: req.method, route: req.path, status_code: res.statusCode });
+  });
+  next();
+});
+
+// Expose metrics for Prometheus
+app.get("/metrics", async (req, res) => {
+  res.set("Content-Type", client.register.contentType);
+  res.end(await client.register.metrics());
+});
 
 // send OTP
 app.post("/send-otp", async (req, res) => {
