@@ -1,0 +1,96 @@
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #e0eafc, #cfdef3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.container {
+  background-color: #ffffff;
+  padding: 40px 30px;
+  border-radius: 15px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+h1 {
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+.otp-gen,
+.otp-valid {
+  margin-top: 20px;
+}
+
+.otp-btn,
+.otp-btn-valid {
+  padding: 12px 25px;
+  background-color: #000000;
+  border: none;
+  color: #fff;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s;
+  margin-top: 15px;
+}
+
+.otp-btn:hover,
+.otp-btn-valid:hover:not(:disabled) {
+  background-color: #16a085;
+  transform: scale(1.05);
+}
+
+.otp-btn-valid:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.otp-paste {
+  margin: 10px 0;
+  padding: 12px;
+  width: 85%;
+  border-radius: 8px;
+  border: 1px solid #dcdde1;
+  font-size: 16px;
+  outline-color: #1abc9c;
+}
+
+.timer-message {
+  margin-top: 15px;
+  font-weight: 600;
+}
+
+.otp-result {
+  margin-top: 10px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease-in;
+}

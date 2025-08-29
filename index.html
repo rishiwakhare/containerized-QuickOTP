@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OTP Verification</title>
+    <link rel="stylesheet" href="/css/style.css" />
+</head>
+
+<body>
+    <div class="container">
+        <h1>OTP Verification</h1>
+
+        <div class="otp-gen">
+            <button class="otp-btn">Generate OTP</button>
+        </div>
+
+        <div class="otp-valid">
+            <label for="otp-insert">Enter the OTP:</label>
+            <input type="number" class="otp-paste" id="otp-insert" disabled />
+            <button type="submit" class="otp-btn-valid" disabled>Verify OTP</button>
+            <p class="otp-result"></p>
+            <p class="timer-message"></p>
+        </div>
+    </div>
+
+    <script src="/js/script.js"></script>
+</body>
+
+</html>
