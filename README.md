@@ -1,4 +1,4 @@
-# QuickOTP (Dockerized Version)
+# QuickOTP (Dockerized Version) (WIP please use main branch)
 
 This is a **Dockerized version** of the original [QuickOTP](https://github.com/rishiwakhare/QuickOTP) web application. The application's core functionality and UI remain unchanged. The only addition is a `Dockerfile` that allows the app to be containerized and served using **Nginx (alpine)**.
 
