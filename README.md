@@ -1,109 +1,156 @@
-# 🚀 QuickOTP - Containerized OTP Service with Monitoring
+# 🚀 QuickOTP – Containerized OTP Service with Monitoring  
 
-QuickOTP is a modern **One-Time Password (OTP) delivery system** built on **Node.js (Express)** with a lightweight frontend, 
-fully containerized using **Docker Compose**, and production-ready observability powered by **Prometheus + Grafana**.
+A production-like **One-Time Password (OTP)** microservice built with:  
 
----
+- **Backend** → Node.js + Express  
+- **Frontend** → HTML/CSS/JavaScript  
+- **Observability** → Prometheus + Grafana  
+- **Containerization** → Docker & Docker Compose  
 
-## ✨ Why This Project Stands Out (Interview Highlights)
-
-- 🔒 **Secure OTP Delivery** → Generates and emails OTPs via Gmail (App Passwords).
-- ⚡ **Containerized Architecture** → Seamless orchestration of **Frontend, Backend, Prometheus, Grafana** with Docker Compose.
-- 📊 **Enterprise-grade Monitoring** → Exposes `/metrics` for Prometheus & visualizes system health in Grafana dashboards.
-- 🚀 **DevOps Ready** → CI/CD pipeline integration (via GitHub Actions) for automated build/test/deploy.
-
-This project demonstrates **system design, backend engineering, observability, and DevOps practices** in a compact yet impactful way — a perfect portfolio project.
+This project demonstrates **API design, observability, monitoring dashboards, and scalability concepts** — perfect for interview discussions.  
 
 ---
 
-## 📂 Project Structure
+## 🛠️ Setup Instructions
 
-```
-containerized-QuickOTP/
-├── backend/            # Node.js + Express backend (OTP API + Prometheus metrics)
-│   ├── server.js
-│   ├── package.json
-│   └── creds.txt
-├── frontend/           # HTML/CSS/JS frontend (OTP request + validation UI)
-│   ├── index.html
-│   ├── css/style.css
-│   └── js/script.js
-├── prometheus.yml      # Prometheus scraping configuration
-├── docker-compose.yml  # Multi-service orchestration
-└── README.md           # This file 😉
-```
+### 1️⃣ Install Docker & Docker Compose  
+[Get Docker](https://docs.docker.com/get-docker/)  
 
----
-
-## ⚙️ Features
-
-- **OTP Service**
-  - Generate, send, and validate OTPs via email.
-- **Observability**
-  - Metrics collected: latency, throughput, error rates, OTP attempts, email send latency.
-- **Monitoring Stack**
-  - Prometheus (scraping metrics)
-  - Grafana (dashboards with p95 latency, error rate %, OTP analytics)
-- **DevOps**
-  - Containerized with Docker Compose
-  - Ready for CI/CD pipeline integration
-
----
-
-## 🐳 Run with Docker Compose
-
+Verify installation:
 ```bash
-docker-compose up --build
+docker -v
+docker compose version
 ```
 
-### Access Points
-- 🌐 **Frontend** → [http://localhost:8080](http://localhost:8080)
-- ⚡ **Backend API** → [http://localhost:3000](http://localhost:3000)
-- 📊 **Prometheus** → [http://localhost:9090](http://localhost:9090)
-- 📈 **Grafana** → [http://localhost:3001](http://localhost:3001) (default: admin / admin)
+### 2️⃣ Clone the Repository
+```bash
+git clone https://github.com/<your-username>/containerized-QuickOTP.git
+cd containerized-QuickOTP
+```
+
+### 3️⃣ Configure Gmail App Password
+- Go to [Google App Passwords](https://myaccount.google.com/apppasswords)  
+- Generate a password for "Mail".  
+- Edit `backend/server.js`:
+  ```js
+  auth: {
+    user: "your_email@gmail.com",
+    pass: "your_app_password"
+  }
+  ```
+
+### 4️⃣ Give Docker Permissions (Linux only)
+```bash
+sudo usermod -aG docker $USER
+newgrp docker
+```
+
+### 5️⃣ Install Node.js Modules (if running backend locally)
+```bash
+cd backend
+npm install
+```
+
+### 6️⃣ Run Everything
+```bash
+docker compose up --build
+```
 
 ---
 
-## 📊 Prometheus Metrics Exposed
+## 🌐 Access Points
 
-- `http_requests_total` → Total HTTP requests
-- `http_request_duration_seconds` → Latency histogram
-- `otp_send_total{status}` → OTP send attempts (success/fail)
-- `otp_validate_total{status}` → OTP validation attempts
-- `otp_email_duration_seconds` → Email send latency (histogram)
-- `active_otps` → Gauge for active OTPs in memory
+- 🌍 **Frontend** → [http://localhost:8080](http://localhost:8080)  
+- ⚙️ **Backend API** → [http://localhost:3000](http://localhost:3000)  
+- 📊 **Prometheus** → [http://localhost:9090](http://localhost:9090)  
+- 📈 **Grafana** → [http://localhost:3001](http://localhost:3001)  
+
+---
+
+## 📊 Metrics Exposed
+
+Prometheus scrapes metrics from `/metrics`.  
+
+**System Metrics**  
+- CPU, memory, event loop, GC  
+
+**Custom Business Metrics**
+- `http_requests_total` → Count of requests by method/route/status  
+- `http_request_duration_seconds` → Latency histogram  
+- `otp_send_total{status="success"|"fail"}` → OTP sends  
+- `otp_validate_total{status="success"|"fail"}` → OTP validations  
+- `otp_active_count` → Current valid OTPs  
+- `otp_email_duration_seconds` → Email send latency  
 
 ---
 
 ## 📈 Grafana Dashboard Ideas
 
-- ✅ **Error Rate (%)** → Failed requests / total
-- ✅ **Latency (p95)** → histogram_quantile(0.95, ...)
-- ✅ **OTP Send Attempts** → success vs fail
-- ✅ **OTP Validation Results** → success vs fail
-- ✅ **Email Send Duration** → p95 latency
+- OTP Send Attempts (Success vs Fail) → 📊 Bar chart  
+- OTP Validation Results → 🥧 Pie chart  
+- Email Send Latency (p95) → ⏱️ Histogram  
+- Error Rate (%) → 🚨 Time-series  
+- Active OTPs Over Time → 📉 Gauge/line  
+- API Latency Per Route → Heatmap  
 
 ---
 
-## 🧪 Testing API
+## 🔗 API Endpoints
 
-**Send OTP**:
-```bash
-curl -X POST http://localhost:3000/send-otp   -H "Content-Type: application/json"   -d '{"email":"test@example.com","otp":"123456"}'
+### 🔑 Send OTP
+```http
+POST /send-otp
+Content-Type: application/json
+{
+  "email": "user@example.com",
+  "otp": "123456"
+}
 ```
 
-**Validate OTP**:
-```bash
-curl -X POST http://localhost:3000/validate-otp   -H "Content-Type: application/json"   -d '{"email":"test@example.com","otp":"123456"}'
+✅ Response
+```json
+{ "success": true, "message": "OTP sent" }
+```
+
+### 🔍 Validate OTP (Upcoming Feature)
+```http
+POST /validate-otp
+Content-Type: application/json
+{
+  "email": "user@example.com",
+  "otp": "123456"
+}
+```
+
+✅ Response
+```json
+{ "success": true, "message": "OTP valid" }
 ```
 
 ---
 
-## 💡 Interview Talking Points
+## ⚡ Scaling & Proof of Concept
 
-- How **observability (Prometheus + Grafana)** gives insights into system reliability.
-- Why **Docker Compose** simplifies multi-service orchestration.
-- How **GitHub Actions CI/CD** could automate testing + deployment.
-- Scaling QuickOTP → moving OTP storage from memory → Redis/DB.
+- **Load Balancing** → Multiple backend containers behind NGINX or Kubernetes  
+- **Persistent Storage** → Replace in-memory OTP store with Redis/MongoDB  
+- **Secrets Management** → Store Gmail creds in `.env` or Docker secrets  
+- **Alerting** → Prometheus alert rules (e.g., OTP failures > 10%)  
+- **CI/CD** → GitHub Actions for build/test/deploy  
 
 ---
+
+## 🔮 Roadmap / Upcoming Features
+
+- ✅ OTP Validation endpoint  
+- ✅ Configurable OTP expiry  
+- ✅ SMS OTP via Twilio  
+- ✅ Prebuilt Grafana dashboard JSON  
+- ✅ Kubernetes Helm chart  
+
+---
+
+✨ **Demo Flow**:  
+1. User enters email in frontend → OTP is generated.  
+2. Backend sends OTP via Gmail → metrics are collected.  
+3. Prometheus scrapes metrics → Grafana visualizes dashboards.  
+4. Interviewer sees real **API, Monitoring & Scaling** story.  
