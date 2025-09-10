@@ -89,7 +89,7 @@ app.post("/send-otp", async (req, res) => {
     service: "gmail",
     auth: {
       user: "rishiwakhare2002@gmail.com", // mail
-      pass: "howp xzmf qrrd krci", // pass through google app (not the normal password)
+      pass: "", // pass through google app (not the normal password)
     },
   });
 
